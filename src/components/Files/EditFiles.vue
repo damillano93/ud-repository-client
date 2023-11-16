@@ -1,5 +1,6 @@
 <template>
-  <v-container class="lighten-5">
+  <v-container class="lighten-5 efcontainer">
+    <br/> <br/>
     <div>
       <h1>{{ title }}</h1>
     </div>
@@ -18,6 +19,33 @@
         </v-alert>
       </div>
     </v-row>
+
+    <!-- Dilog confirmacion-->
+    <v-dialog v-model="dialog" width="30%" persistent>
+      <v-card>
+        <v-card-title>Confirmar Acción</v-card-title>
+        <v-card-text>¿Desea guardar los cambios?</v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-btn @click="dialog = false">Cancelar</v-btn>
+          <v-btn @click="submit(mymodel)">Aceptar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- fin dialog --->
+
+    <!-- Dilog confirmacion resultado-->
+    <v-dialog v-model="result.state" width="30%" dark persistent>
+      <v-card>
+        <v-card-title>Resultado</v-card-title>
+        <v-card-text> {{ result.text }}</v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-btn @click="volver()">Aceptar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- fin dialog resultado--->
   </v-container>
 </template>
 
@@ -30,9 +58,14 @@ export default {
       file: "",
       model: {
         entity: "Universidad Distrital Francisco José de Caldas",
+        state: "Por aprobar",
       },
-      title: "Crear recursos",
+      title: "Editar recursos",
       result: { state: false },
+
+      dialog: false,
+      mymodel: { entity: "Universidad Distrital Francisco José de Caldas" },
+
       schema: {
         fields: [
           {
@@ -44,7 +77,7 @@ export default {
           {
             type: "input",
             inputType: "text",
-            label: "Titulo",
+            label: "Título",
             model: "title",
             placeholder: "Titulo del recurso",
             featured: true,
@@ -58,7 +91,10 @@ export default {
             placeholder: "Idioma del recurso",
             featured: true,
             required: true,
-            values: ["Español", "Inlges"],
+            values: ["Español", "Inglés", "Francés", "Alemán", "Portugués"],
+            selectOptions: {
+              noneSelectedText: "Haga clic para seleccionar una opción",
+            },
             default: "Español",
           },
           {
@@ -74,9 +110,9 @@ export default {
             type: "textArea",
             label: "Palabras clave",
             model: "key_words",
-            hint: "Maximo 5 palabras",
+            hint: "Máximo 5 palabras",
             max: 200,
-            placeholder: "Maximo 5 palabras separadas por ,",
+            placeholder: "Máximo 5 palabras separadas por ,",
             rows: 2,
           },
           {
@@ -90,22 +126,21 @@ export default {
             inputType: "number",
             label: "Versión",
             model: "version",
-            min: 0,
+            min: 1,
             max: 200,
-            placeholder: "Numero de la version del recurso",
+            placeholder: "Número de la versión del recurso",
             featured: true,
             required: true,
           },
           {
-            type: "select",
+            type: "input",
             inputType: "text",
             label: "Estado",
             model: "state",
             placeholder: "Estado del del recurso",
             featured: true,
             required: true,
-            values: ["Activo", "Inactivo"],
-            default: "Activo",
+            disabled: true,
           },
           {
             type: "textArea",
@@ -122,6 +157,7 @@ export default {
             model: "created",
             styleClasses: "blue lighten-4 text-md-center",
           },
+          /*
           {
             type: "select",
             inputType: "text",
@@ -132,18 +168,42 @@ export default {
             featured: true,
             required: true,
             values: ["Activo", "Expositivo", "Combinado"],
+              selectOptions: {
+              noneSelectedText: "Haga clic para seleccionar una opción",
+            },
             default: "Activo",
           },
+          */
           {
-            type: "input",
+            type: "select",
             inputType: "text",
-            label: "Tipo de recurso educativo",
+            label: "Clasificación de recurso educativo",
             model: "type_of_educational_resource",
-            placeholder: "Tipo de recurso educativo",
+            placeholder: "Seleccione la tipología de su recurso",
             featured: true,
             required: true,
+            values: [
+              "Infografía",
+              "Mapa conceptual",
+              "Grabación de voz propia",
+              "Podcast",
+              "Animación",
+              "Videotutorial",
+              "Vídeo infográfico",
+              "Video motion grafics",
+              "Video explicativo (grabación de autor)",
+              "Manual",
+              "Plantilla",
+              "Documento de investigación",
+              "Documento de trabajo",
+              "Documento interactivo",
+            ],
+            selectOptions: {
+              noneSelectedText: "Haga clic para seleccionar una opción",
+            },
+            help: "Seleccione la tipología de su recurso.",
           },
-          {
+          /* {
             type: "select",
             inputType: "text",
             label: "Nivel de interación",
@@ -153,52 +213,43 @@ export default {
             featured: true,
             required: true,
             values: ["Muy bajo", "Bajo", "Medio Alto", "Muy alto"],
+              selectOptions: {
+              noneSelectedText: "Haga clic para seleccionar una opción",
+            },
             default: "Muy bajo",
-          },
+          },*/
           {
-            type: "input",
+            type: "select",
             inputType: "text",
             label: "Población objetivo",
             model: "objetive_poblation",
-            placeholder:
-              "El usuario principal para el que ha sido diseñado este recurso.",
             featured: true,
             required: true,
-          },
-          {
-            type: "input",
-            inputType: "text",
-            label: "Contexto",
-            model: "context",
-            placeholder: "El entorno principal en el que se utilizará.",
-            featured: true,
-            required: true,
-          },
-          {
-            type: "label",
-            label: "<h3>Derechos de uso</h3>",
-            model: "created",
-            styleClasses: "blue lighten-4 text-md-center",
+            values: ["Estudiantes", "Docentes", "Investigadores"],
+            selectOptions: {
+              noneSelectedText: "Haga clic para seleccionar una opción",
+            },
+            help: "Seleccione la población a quien va dirigido este recurso.",
           },
           {
             type: "select",
             inputType: "text",
-            label: "Copyright",
-            model: "copyright",
-            placeholder: "Tipo de derechos",
+            label: "Contexto",
+            model: "context",
             featured: true,
             required: true,
             values: [
-              "Atribución",
-              "Atribución-CompartirIgual",
-              "Atribución-SinDerivadas",
-              "Atribución-NoComercial",
-              "Atribución-NoComercial-CompartirIgual",
-              "Atribución-NoComercial-SinDerivadas",
+              "Educación superior",
+              "Educación tecnológica",
+              "Educación media",
+              "Educación inicial",
             ],
-            default: "Atribución",
-            help: `para mas información <a target="_blank" href="https://creativecommons.org/licenses/?lang=es">Creative Commons</a>`,
+            selectOptions: {
+              noneSelectedText: "Haga clic para seleccionar una opción",
+            },
+            help: "Entorno educativo en el que se utilizara el recurso.",
           },
+
           {
             type: "label",
             label: "<h3>Anotación</h3>",
@@ -216,12 +267,12 @@ export default {
             featured: true,
             required: true,
           },
-          {
+          /*{
             type: "input",
             inputType: "date",
             label: "Fecha",
             model: "date",
-          },
+          },*/
           {
             type: "checklist",
             label: "Clasificación",
@@ -247,12 +298,39 @@ export default {
             placeholder: "Correo electronico",
             featured: true,
             required: true,
-                disabled: true,
+            disabled: true,
+          },
+          {
+            type: "label",
+            label: "<h3>Derechos de uso</h3>",
+            model: "created",
+            styleClasses: "blue lighten-4 text-md-center",
+          },
+          {
+            type: "select",
+            inputType: "text",
+            label: "Copyright",
+            model: "copyright",
+            placeholder: "Tipo de derechos",
+            featured: true,
+            required: true,
+            values: [
+              "Atribución",
+              "Atribución-NoComercial",
+              "Atribución-NoComercial-CompartirIgual",
+              "Atribución-CompartirIgual",
+            ],
+            selectOptions: {
+              noneSelectedText: "Haga clic para seleccionar una opción",
+            },
+            default: "Atribución",
+            help: `para mas información <a target="_blank" href="https://co.creativecommons.net/tipos-de-licencias/">Creative Commons</a>`,
           },
           {
             type: "submit",
             buttonText: "Actualizar Recurso",
-            onSubmit: (model) => this.submit(model),
+            // onSubmit: (model) => this.submit(model),
+            onSubmit: (model) => this.editar(model),
           },
         ],
       },
@@ -265,11 +343,14 @@ export default {
   },
   methods: {
     submit(model) {
+      this.dialog = false;
       const id = this.$route.params.id;
+      model.state = "Por aprobar";
+
       FilesService.updateFiles(model, id)
         .then(({ data }) => {
           this.result = {
-            text: `el recurso ${data}`,
+            text: `el recurso ${this.model.title} ${data}`,
             color: "green lighten-2",
             state: true,
           };
@@ -284,10 +365,22 @@ export default {
         });
     },
 
+    editar(model) {
+      this.dialog = true;
+      this.mymodel = model;
+    },
+
+    volver() {
+      this.$router.push({ name: "files" });
+    },
+
     getFile(id) {
       FilesService.getFilesByid(id)
         .then(({ data }) => {
           const response = data.filter((file) => file.id == id)[0];
+          const formatDate = new Date(parseInt(response.date, 10))
+            .toISOString()
+            .slice(0, 10);
           this.model = {
             title: response.title,
             language: response.language,
@@ -297,18 +390,18 @@ export default {
             state: response.state,
             participants: response.participants,
             format: response.format,
-            size: response.size,
-            location: response.location,
+          //  size: response.size,
+          
             requierements: response.requierements || "",
-            class_learning: response.class_learning,
+            // class_learning: response.class_learning,
             type_of_educational_resource: response.type_of_educational_resource,
-            level_of_interaction: response.level_of_interaction,
+            //level_of_interaction: response.level_of_interaction,
             objetive_poblation: response.objetive_poblation,
             context: response.context,
             cost: response.cost || "",
             copyright: response.copyright,
             entity: response.entity,
-            date: response.date,
+            date: formatDate,
             purpose: response.purpose,
             email: response.email,
           };
@@ -358,10 +451,10 @@ pre .key {
   color: green;
 }
 
-.container {
-  max-width: 970px;
-  padding-right: 15px;
-  padding-left: 15px;
+.efcontainer {
+  max-width: 1024px;
+  padding-right: 5%;
+  padding-left: 5%;
   margin-right: auto;
   margin-left: auto;
 }

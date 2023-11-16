@@ -2,7 +2,6 @@ name: ci
 
 on:
   push:
-    branches: newfront
 
 jobs:
   path-context:
@@ -31,12 +30,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ github.repository }}:latest
-      - 
-        name: send custom message with args
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-           The ${{ github.repository }} pass action.
-           in branch ${{ github.ref }}.
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache

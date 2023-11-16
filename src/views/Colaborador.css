@@ -1,0 +1,16 @@
+.acc_icon {
+    height: 50px;
+    width: 50px;
+    border: 4px solid  #8B1919;
+    border-radius: 100px;
+   
+    color:  #8B1919;
+    border-color:  #8B1919;
+}
+.title{
+    color: #940611; font-size: 40px; text-align: center;
+}
+.btns {
+    background-color: aliceblue  !important;
+    color: #8B1919 !important;
+  }

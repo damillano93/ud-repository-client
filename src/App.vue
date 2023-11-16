@@ -1,216 +1,289 @@
 <template>
   <div>
-    <div v-if="!isMobile" class="banner-all" :style="myStyle">
-      <img
-        class="logo-planestic1"
-        src="./assets/images/LOGO-UD-BLANCO-13-13.png"
-      />
-      <img
-        class="logo-planestic2"
-        src="./assets/images/logo_planestic2-01.png"
-      />
+    <div v-if="!isMobile" class="banner-all" :style="logoStyle">
+      <img class="logo-planestic1" src="./assets/images/logo2.png" />
+      <img class="logo-planestic2" src="./assets/images/logo_planestic.png" />
+      <div class="trapezoid">
+        <div v-if="isLogin">
+          <v-icon style="color: aliceblue;"> mdi-account </v-icon>
+          {{ rol }}
+          <v-hover v-slot="{ hover }">
+          <v-btn rounded style="background-color: #8B1919; color: aliceblue;" @click="logout() " :class="{ 'btns': hover }">
+              Cerrar sesión
+            </v-btn>
+          </v-hover>
+        </div>
+
+        <div class="login" v-else>
+          <v-hover v-slot="{ hover }">
+            <v-btn rounded @click="dialog2 = true" style="background-color: #8B1919; color: aliceblue;"
+              :class="{ 'btns': hover }">Crear cuenta</v-btn>
+          </v-hover>
+          <v-hover v-slot="{ hover }">
+            <v-btn rounded style="background-color: #8B1919; color: aliceblue;" @click="dialog = true" :class="{ 'btns': hover }">
+              Iniciar Sesión</v-btn>
+          </v-hover>
+
+        </div>
+
+
+      </div>
+      <v-dialog v-model="dialog" activator="parent" width="auto" style="background-color:#940611 ;">
+        <v-card style="background-color:#940611 ;">
+          <v-card-actions>
+
+            <v-btn style="background-color: aliceblue; color: black;" icon="mdi-calendar" size="x-large"
+              @click="dialog = false">X</v-btn>
+          </v-card-actions>
+          <v-card-text>
+
+            <h2 style="color: aliceblue; padding: 15px; ">¡Únete y conoce todos los recursos que te ayudarán!</h2>
+           
+            <p style="color: aliceblue; padding: 10px; padding-left: 20%; font-size: 18px;">Comienza utilizando tu cuenta
+              Microsoft</p>
+
+            <a href="https://rdigital.planestic.udistrital.edu.co/api/microsoft" style="padding-left: 35%;">
+              <v-btn v-if="!isLogin" rounded style="background-color: aliceblue;  " class="btn btn-ligh">
+                <img class="ms-icon center" src="./assets/images/microsoftlogo.png" />
+
+              </v-btn>
+              <!--href="http://localhost:3000/google"-->
+            </a>
+
+
+
+
+
+          </v-card-text>
+
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialog2" activator="parent" width="auto" style="background-color:#940611 ;">
+        <v-card style="background-color:#940611 ;">
+          <v-card-actions>
+            <v-btn style="background-color: aliceblue; color: black;" icon="mdi-calendar" size="x-large"
+              @click="dialog2 = false">X</v-btn>
+          </v-card-actions>
+          <v-card-text>
+
+            <h2 style="color: aliceblue; padding: 15px;text-align: center; ">Crea tu cuenta</h2>
+            <p style="color: aliceblue; padding: 10px;text-align: center; font-size: 18px;">Accede a nuestro contenido,
+              publica y
+              avanza en tu conocimiento.</p>
+            <a href="https://rdigital.planestic.udistrital.edu.co/api/microsoft" style="padding-left: 35%;">
+              <v-btn v-if="!isLogin" rounded style="background-color: aliceblue;  " class="btn btn-ligh">
+                <img class="ms-icon center" src="./assets/images/microsoftlogo.png" />
+
+              </v-btn>
+              <!--href="http://localhost:3000/google"-->
+            </a>
+            <div style="text-align: center;padding-top: 2%;">
+              <v-btn v-if="!isLogin" rounded style="background-color: aliceblue;" class="btn btn-ligh"
+                @click="dialog3 = true">
+                Conecta con correo
+              </v-btn>
+            </div>
+            <v-hover v-slot="{ hover }">
+            <v-btn rounded style="background-color: #8B1919; color: aliceblue;" @click="logout() " :class="{ 'btns': hover }">
+              Cerrar sesión
+            </v-btn></v-hover>
+            
+            
+  
+
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialog3" activator="parent" width="auto" style="background-color:#940611 ;">
+        <v-card style="background-color:#940611 ;">
+          <v-card-actions>
+            <v-btn style="background-color: aliceblue; color: black;" icon="mdi-calendar" size="x-large"
+              @click="dialog3 = false">X</v-btn>
+          </v-card-actions>
+          <v-card-text>
+
+            <h2 style="color: aliceblue; padding: 15px;text-align: center; ">Completa tu registro
+              llenando tus datos</h2>
+            <v-form>
+              <h3 style="color: aliceblue;padding-bottom: 2%;">Nombres y apellidos</h3>
+              <v-text-field class="form"> </v-text-field>
+              <h3 style="color: aliceblue;padding-bottom: 2%; padding-top: 4%;">Correo electrónico</h3>
+              <v-text-field class="form"> </v-text-field>
+              <h3 style="color: aliceblue;padding-bottom: 2%; padding-top: 4%;">Contraseña</h3>
+              <v-text-field class="form"> </v-text-field>
+              <h3 style="color: aliceblue;padding-bottom: 2%; padding-top: 4%;">Número de teléfono (opcional)</h3>
+              <v-text-field class="form"> </v-text-field>
+
+              <v-checkbox color="white" v-model="checkbox" :rules="[v => !!v || 'Debes aceptar para continuar!']"
+                label="Autorizo el tratamiento de mis datos" required></v-checkbox>
+              <v-checkbox color="white" v-model="checkbox" label="Deseo recibir actualizaciones" required></v-checkbox>
+              <div style="text-align:center">
+                <v-btn rounded style="background-color:  aliceblue; color:black;" class="btn btn-ligh">Continuar </v-btn>
+              </div>
+
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
+
+
+
     </div>
-    <v-app>
-      <v-app-bar app  style="position: absolute;">
-        <div v-if="!isMobile" class="d-flex align-center mr-2">
-          {{ title }}
-        </div>
-        <v-menu left bottom v-if="isMobile">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn icon v-bind="attrs" v-on="on">
-              <v-app-bar-nav-icon></v-app-bar-nav-icon>
-            </v-btn>
-          </template>
+    <hr class="solid">
+    <v-app class="myFont">
+      <v-app-bar app style="position: absolute;">
+        <v-app-bar-nav-icon @click="menu_izq = !menu_izq" v-if="isMobile"></v-app-bar-nav-icon>
 
-          <v-list>
-            <v-list-item 
-             :to="button.route"
-              v-for="(button, index) in buttons"
-              :key="index"
-              text
-            >
-              <v-list-item-title >{{ button.text }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-        <div v-else>
-          <div v-if="token">
-            <v-btn
-              :to="button.route"
-              v-for="(button, index) in buttons"
-              :key="index"
-              text
-            >
-              {{ button.text }}
-            </v-btn>
-          </div>
-        </div>
-        <div>
-          <v-tooltip v-if="$vuetify.theme.dark" bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn v-on="on" color="info" small fab @click="darkMode">
-                <v-icon class="mr-1">mdi-moon-waxing-crescent</v-icon>
-              </v-btn>
-            </template>
-            <span>Dark Mode On</span>
-          </v-tooltip>
 
-          <v-tooltip v-else bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn v-on="on" color="info" small fab @click="darkMode">
-                <v-icon color="yellow">mdi-white-balance-sunny</v-icon>
-              </v-btn>
-            </template>
-            <span>Dark Mode Off</span>
-          </v-tooltip>
-        </div>
-        <div class="pull-right">
-          <div class="pull-right" v-if="isLogin">
-            <v-avatar class="pull-right">
-              <img :src="url_image" :alt="name" />
-            </v-avatar>
-            <a @click="logout"> Cerrar Sesion </a>
-          </div>
-          <a
-            class="pull-right"
-            v-else
-            href="https://apirepository.damillano.com/api/google"
-          >
-            Iniciar Sesion
-          </a>
-        </div>
-      </v-app-bar>
+        <v-tabs centered color="black" v-if="!isMobile">
+          <v-tab :to="button.route" v-for="(button, index) in buttons" :key="index" text>
+            {{ button.text }}
+          </v-tab>
 
-      <v-main :style="backStyle">
-        <router-view />
-      </v-main>
-    </v-app>
-     <v-footer
-    dark
-    padless
-  >
-    <v-card
-      class="flex"
-      flat
-      tile
-    >
-      <v-card-title class="teal">
-        <strong >© Copyright  {{ new Date().getFullYear() }} Planestic-UD / Sitio creado y administrado por Planestic UD</strong>
+        </v-tabs>
 
         <v-spacer></v-spacer>
-       <img
-        class="logo-planestic2"
-        src="./assets/images/logo_planestic2-01.png"
-      />
-      </v-card-title>
 
-      <v-card-text class="py-2 white--text text-center">
-      
-      </v-card-text>
-    </v-card>
-  </v-footer>
+      </v-app-bar>
+      <v-navigation-drawer v-model="menu_izq" absolute temporary>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>{{ title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+        <v-list dense>
+          <v-list-item :to="button.route" v-for="(button, index) in buttons" :key="index" link>
+            <v-list-item-content>
+              <v-list-item-title> {{ button.text }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+
+      <!------- Menu Usuario------>
+      <v-navigation-drawer app v-model="drawer" right absolute temporary>
+        <v-list-item>
+          <v-list-item-avatar>
+            <v-img :src="url_image"></v-img>
+          </v-list-item-avatar>
+
+          <v-list-item-content>
+            <v-list-item-title>{{ name }}</v-list-item-title>
+            <v-list-item-subtitle>{{ rol }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
+        <v-list dense>
+          <!-- <v-list-item v-for="item in items" :key="item.title" link>
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          --->
+          <v-divider></v-divider>
+          <v-list-item @click="logout()">
+            <v-list-item-icon>
+              <v-icon>mdi-exit-run</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Salir</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+      <!-------Fin Menu Usuario------>
+
+      <br />
+
+      <router-view />
+      <v-card dark padless>
+        <v-row style="background-color: #8B1919;">
+          <v-col sm="5">
+            <h2 style="text-align: right;padding: 4%;">Síguenos en redes sociales</h2>
+          </v-col>
+          <v-col sm="6">
+            <v-card flat tile color="#8b1919" class="white--text text-center" style="background-color: #8B1919;">
+              <v-card-text style="padding-left: 0%;">
+                <v-btn :href="lik.route" :target="lik.route" v-for="lik in linkk" :key="lik.icons"
+                  class="mx-4 white--text" icon>
+                  <v-hover v-slot="{ hover }" open-delay="200">
+                    <v-icon :title="lik.des" :size="hover ? '64px' : '36px'" :class="{ 'on-hover': hover }">
+                      {{ lik.icons }}
+                    </v-icon>
+                  </v-hover>
+                </v-btn>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-card>
+      <v-footer dark padless>
+
+        <div style="background-color:#373737; width:100%;">
+          <v-row style="padding-top: 1%;font-size: 14px;padding-right: 10%;padding-left: 8%;">
+            <v-col sm="4">
+              <strong>Universidad Distrital Francisco José de Caldas</strong><br>
+              <strong>NIT.899.999.230-7</strong><br><br>
+              <p>Institución de Educación Superior sujeta
+                a inspección y vigilancia por el
+                Ministerio de Educación Nacional</p><br>
+              <p>Acuerdo de creación N° 10 de 1948 del
+                Concejo de Bogotá
+                Acreditación Institucional de Alta
+                Calidad - Resolución N° 23096 del 15 de
+                diciembre del 2016</p>
+            </v-col>
+            <v-col>
+              <strong>Nosotros</strong><br><br>
+
+              <a v-for="nos in nosotros" :key="nos.name" style="color: aliceblue;" target="_blank" :href="nos.route"> {{
+                nos.name }} <br><br>
+              </a>
+            </v-col>
+            <v-col>
+              <strong>Servicios</strong><br><br>
+              <a v-for="servicio in servicios" :key="servicio.name" style="color: aliceblue;" target="_blank"
+                :href="servicio.route"> {{ servicio.name }} <br><br>
+              </a>
+            </v-col>
+            <v-col>
+              <strong>Novedades</strong><br><br>
+              <a v-for="novedad in novedades" :key="novedad.name" style="color: aliceblue;" target="_blank"
+                :href="novedad.route"> {{ novedad.name }} <br><br>
+              </a>
+            </v-col>
+            <v-col>
+              <strong>Contáctenos</strong><br><br>
+              <p>Coordinador<br>
+                Carlos Enrique Montenegro Marín
+                cemontenegrom@udistrital.edu.co</p><br>
+              <p>Cl. 13 #31-75<br>
+                Bogotá D.C. República de Colombia</p><br>
+              <p>323 9300 ext: 6368<br>
+                planesticud@udistrital.edu.co<br>
+                Lunes a viernes de 8 a.m. a 5 p.m</p>
+            </v-col>
+          </v-row>
+        </div>
+
+
+        <div class="px-4 py-8 bg-black"></div>
+      </v-footer>
+
+
+
+    </v-app>
   </div>
 </template>
-
-<script>
-export default {
-  name: "app",
-  data() {
-    return {
-      title: "Repositorio UD",
-      isLogin: false,
-      url_image: "",
-      buttons: [],
-      name: "",
-      token: "",
-      isMobile: false,
-      myStyle: {
-        backgroundColor: "#8b1919",
-        width: 700,
-      },
-      backStyle: {
-          "background-color": "#F3F3F3"
-      },
-    };
-  },
-  beforeDestroy() {
-    if (typeof window === "undefined") return;
-
-    window.removeEventListener("resize", this.onResize, { passive: true });
-  },
-  methods: {
-    image() {
-      if (localStorage.url_image) {
-        this.isLogin = true;
-        this.url_image = localStorage.url_image;
-      } else {
-        this.isLogin = false;
-      }
-    },
-    darkMode() {
-      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
-      if(this.$vuetify.theme.dark){
-        this.backStyle =  {
-          "background-color": "#1e1e1e"
-      }
-      }
-      else{
-         this.backStyle =  {
-          "background-color": "#F3F3F3"
-      }
-      }
-    },
-    logout() {
-      localStorage.clear();
-      this.image();
-      this.$router.push({ name: "login" });
-      location.reload();
-    },
-    onResize() {
-      this.isMobile = window.innerWidth < 800;
-    },
-  },
-  mounted() {
-    if (localStorage.name) {
-      this.name = localStorage.name;
-    }
-    if (localStorage.token) {
-      this.token = localStorage.token;
-      this.buttons = [
-        { text: "Inicio", route: "/home" },
-        { text: "Recursos", route: "/files" },
-      ];
-      if (localStorage.rol === "ADMINISTRADOR") {
-        this.buttons.push({ text: "Usuarios", route: "/users" });
-      }
-    }
-    this.image();
-    this.onResize();
-
-    window.addEventListener("resize", this.onResize, { passive: true });
-  },
-};
-</script>
-<style >
-.pull-right {
-  margin-left: auto;
-}
-
-.banner-all {
-  backgroundcolor: "#8b1919";
-  max-height: 170px;
-}
-.logo-planestic1 {
-  margin-left: 20px;
-}
-.logo-planestic2 {
-  max-height: 100px;
-  margin: auto;
-  margin-top: 5px;
-  float: right;
-}
-.backStyle {
-    background-color: #F3F3F3;
-}
-
-</style>
+<script src="./App.js"></script>
+<style src="./App.css"></style>

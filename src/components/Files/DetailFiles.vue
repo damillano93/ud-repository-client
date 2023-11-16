@@ -1,11 +1,12 @@
 <template>
-  <v-container class="lighten-5">
+  <v-container class="lighten-5 dtcontainer">
+    <br/> <br/>
     <div>
       <h1>
         {{ title.text }} <v-icon :title="title.text">{{ title.icon }}</v-icon>
       </h1>
       <template v-for="item in header">
-        <p :class="item.class" v-if="item" :key="item">
+        <p :class="item.class" v-if="item" :key="item.key">
           <strong v-if="item.value" :key="item.value">{{ item.value }} </strong>
           <a
             v-if="item.key == 'location'"
@@ -13,10 +14,8 @@
             target="_blank"
           >
             Ver recurso
-            <v-icon small class="mr-2" title="Copiar recurso"
-              >mdi-checkbox-multiple-blank-outline</v-icon
-            >
           </a>
+
           <v-chip
             v-else-if="item.key == 'state'"
             :color="getColor(model[item.key])"
@@ -27,20 +26,92 @@
           <span v-else :class="item.class">{{ model[item.key] }}</span>
         </p>
       </template>
+
+      <v-row justify-lg="center" v-show="showranking">
+        <v-rating
+          readonly
+          v-model="rating"
+          background-color="yellow"
+          color="green"
+          large
+          half-icon="$ratingHalf"
+          half-increments
+          dark
+        ></v-rating>
+      </v-row>
+
+      <v-row justify="center" v-show="true">
+        <v-dialog v-model="dialog" persistent max-width="390">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              v-show="dialogo"
+              color="primary"
+              dark
+              v-bind="attrs"
+              v-on="on"
+              @click="consultarranking()"
+            >
+              Calificar y Descargar
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title class="text-h5">
+              Que tanto te gusto el recurso?
+            </v-card-title>
+            <v-rating
+              v-model="rating"
+              background-color="yellow"
+              color="green"
+              large
+              half-icon="$ratingHalf"
+              half-increments
+              dark
+              @input="calcu()"
+            ></v-rating>
+            <p>{{ rating }}</p>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="green darken-1" text @click="dialog = false">
+                No calificar
+              </v-btn>
+              <!-- <v-btn color="green darken-1" text @click="dialog = false">-->
+              <v-btn
+                color="green darken-1"
+                :disabled="btnd"
+                text
+                @click="calificarRecurso()"
+              >
+                Guardar y Descargar
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
     </div>
   </v-container>
 </template>
 
 <script>
 import FilesService from "../../services/files";
+import statisticsService from "../../services/statistics";
 export default {
   data() {
     return {
+      showranking: false,
+      stateranking: false,
+      dialogo: true,
+      dialog: false,
+      statistic: [],
+      rating: 0,
+      rankingold: 0,
+      btnd: true,
+      value: 0,
+
       title: { text: "Detalle de recurso", icon: "mdi-file-outline" },
       model: {},
       header: [
         { class: "blue lighten-4 text-md-center", value: "General" },
-        { class: "", key: "title", value: "Titulo:" },
+        { class: "", key: "title", value: "Título:" },
         { class: "", key: "language", value: "Idioma:" },
         { class: "", key: "description", value: "Descripción:" },
         { class: "", key: "key_words", value: "Palabras clave:" },
@@ -59,17 +130,17 @@ export default {
           class: "blue lighten-4 text-md-center",
           value: "Caracteristicas pedagogicas",
         },
-        { class: "", key: "class_learning", value: "Tipo de apdrendizaje:" },
+        /* { class: "", key: "class_learning", value: "Tipo de apdrendizaje:" },*/
         {
           class: "",
           key: "type_of_educational_resource",
-          value: "Tipo de recurso educacional:",
+          value: "Clasificación de recurso educativo:",
         },
-        {
+        /*{
           class: "",
           key: "level_of_interaction",
           value: "Nivel de interación:",
-        },
+        },*/
         { class: "", key: "objetive_poblation", value: "Población objetivo:" },
         { class: "", key: "context", value: "Contexto:" },
         { class: "blue lighten-4 text-md-center", value: "Derechos de uso" },
@@ -99,6 +170,7 @@ export default {
           var formatDate = new Date(
             parseInt(response.date, 10)
           ).toLocaleDateString("en-US");
+
 
           this.model = {
             title: response.title,
@@ -142,10 +214,60 @@ export default {
         });
     },
     getColor(state) {
-      if (state == "Inactivo") return "red";
-      if (state == "Activo") return "green";
+      if (state == "No aprobado") return "red";
+      if (state == "Aprobado") return "green";
       else return "blue";
     },
+
+    calcu() {
+      //console.log("cambio000");
+      this.btnd = false;
+    },
+    consultarranking() {
+      statisticsService
+        .getStadisticsByid(this.$route.params.id)
+        .then((response) => {
+          if (response.data[0]) {
+            this.statistic[0] = response.data[0];
+            this.rating = response.data[0].ranking;
+           // console.log("existe y consulto rankin: " + this.rating);
+          } else {
+           // console.log("No existe se debe crear");
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+    calificarRecurso() {
+      if (
+        this.statistic[0].ranking === null ||
+        this.statistic[0].ranking === 0.0
+      ) {
+ 
+        this.statistic[0].num_download = 1;
+        this.statistic[0].ranking = this.rating;
+      } else {
+     
+        //this.statistic[0].ranking =   (this.statistic[0].ranking + this.ranking) / 2;
+        this.statistic[0].ranking =
+          (this.statistic[0].ranking * this.statistic[0].num_download +
+            this.rating) /
+          (this.statistic[0].num_download + 1);
+        this.statistic[0].num_download = this.statistic[0].num_download + 1;
+      }
+      statisticsService
+        .updateStadistics(this.statistic[0], this.statistic[0].id)
+        .catch((e) => {
+          console.log(e);
+        });
+      this.dialog = false;
+      this.dialogo = false;
+      this.showranking = true;
+
+      window.open(this.model.location, "_blank");
+    },
+    
   },
 
   mounted() {
@@ -155,7 +277,7 @@ export default {
 };
 </script>
 
- <style>
+ <style scoped>
 html {
   font-family: Tahoma;
   font-size: 14px;
@@ -187,10 +309,10 @@ pre .key {
   color: green;
 }
 
-.container {
-  max-width: 970px;
-  padding-right: 15px;
-  padding-left: 15px;
+.dtcontainer {
+  max-width: 1021px;
+  padding-right: 5%;
+  padding-left: 5%;
   margin-right: auto;
   margin-left: auto;
 }

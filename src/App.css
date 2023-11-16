@@ -1,0 +1,108 @@
+.pull-right {
+  margin-left: auto;
+  padding-top: 4px;
+}
+
+
+/*.banner-all {
+  background-color: #8b1919;
+  max-height: 170px;
+}
+*/
+
+.logo-planestic1 {
+  margin-left: 20px;
+  max-height: 80px;
+}
+
+.logo-planestic2 {
+  max-height: 60px;
+  margin: auto;
+  margin-top: 5px;
+}
+
+.logo-planestic3 {
+  max-height: 60px;
+  margin: auto;
+  margin-top: 60px;
+  float: right;
+}
+
+.backStyle {
+  background-color: #f3f3f3;
+}
+
+.sinLine {
+  text-decoration: none;
+}
+
+.osc {
+  background-color: #393939;
+  color: #f3f3f3;
+}
+
+.cla {
+  background-color: #f3f3f3;
+}
+
+.nombre {
+  line-height: 0;
+  padding-left: 55px;
+  font-size: 12px;
+}
+
+hr.solid {
+  border-top: 6px solid #000000;
+}
+
+.trapezoid {
+  border-bottom: 50px solid #8B1919;
+  border-left: 25px solid transparent;
+  height: 0;
+  width: 350px;
+  margin-top: 35px;
+  float: right;
+  color: #f3f3f3;
+  font-family: "Roboto", sans-serif;
+}
+
+.trapezoidbtn {
+  color: #8B1919;
+}
+
+.ms-icon {
+  width: 140px;
+  height: 70px;
+}
+
+.center {
+  margin: auto;
+  padding: 1px;
+}
+
+.login {
+  padding: 10px;
+  padding-left: 0%;
+
+}
+
+.form {
+  background-color: aliceblue;
+  border-radius: 15px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 0%;
+  padding-bottom: 0%;
+  
+}
+
+
+.btns {
+  background-color: aliceblue  !important;
+  color: #8B1919 !important;
+}
+/*
+.myFont {
+  font-family: 'Lato';
+}
+*/

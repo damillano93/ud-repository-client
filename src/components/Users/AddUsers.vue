@@ -1,5 +1,6 @@
 <template>
-  <v-container class="lighten-5">
+  <v-container class="lighten-5 aduscontainer">
+    <br/> <br/>
     <div>
       <h1>{{ title }}</h1>
     </div>
@@ -58,8 +59,8 @@ export default {
             placeholder: "Rol del usuario en la plataforma",
             featured: true,
             required: true,
-            values: ["ESTUDIANTE", "DOCENTE", "ADMINISTRADOR"],
-            default: "ESTUDIANTE",
+            values: ["VISUALIZADOR", "CREADOR", "ADMINISTRADOR", "EVALUADOR"],
+            default: "VISUALIZADOR",
             help: `rol que tendra el usuario en la plataforma`,
           },
           {
@@ -74,14 +75,14 @@ export default {
         validateAfterChanged: true,
         validateAsync: true,
       },
-    }
+    };
   },
   methods: {
     submit(model) {
       UserService.createUser(model)
         .then(({ data }) => {
           this.result = {
-            text: `el usuario ${data[0].username} fue creado con el id ${data[0].id}`,
+            text: `el usuario ${data[0].name} fue creado con el id ${data[0].id}`,
             color: "green lighten-2",
             state: true,
           };
@@ -132,7 +133,7 @@ pre .key {
 }
 
 .container {
-  max-width: 970px;
+  max-width: 700px;
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;

@@ -1,5 +1,5 @@
 import axios from "axios";
-const repositoryUrl = 'https://apirepository.damillano.com/api'
+const repositoryUrl = 'https://rdigital.planestic.udistrital.edu.co/api'
 
 class FilesService {
 
@@ -17,6 +17,9 @@ class FilesService {
     getFilesByEmail(email) {
         return axios.get(`${repositoryUrl}/files/email`, { params: { email: email } })
     }
+    getFilesByState(state) {
+        return axios.get(`${repositoryUrl}/files/state`, { params: { state: state } })
+    }
     createFile(data) {
         return axios.post(`${repositoryUrl}/files`, data)
     }
@@ -30,11 +33,27 @@ class FilesService {
         formData.append("file", file);
         return axios.post(`${repositoryUrl}/upload`, formData, {
             headers: {
-              "Content-Type": "multipart/form-data"
+                "Content-Type": "multipart/form-data"
             },
             onUploadProgress
-          })
+        })
     }
+
+    getListLifecyConteo(dato) {
+        const data = dato
+        return axios.get(`${repositoryUrl}/lifecycle/contar`, { params: data });
+    }
+
+    getGeneralConteo(dato) {
+        const data = dato
+        return axios.get(`${repositoryUrl}/files/general/contar`, { params: data });
+    }
+
+    getPedagogicalConteo(dato) {
+        const data = dato
+        return axios.get(`${repositoryUrl}/pedagogical_requirements/contar`, { params: data });
+    }
+
 }
 
 export default new FilesService();

@@ -1,5 +1,6 @@
 <template>
   <v-container class="lighten-5">
+    <br/> <br/>
     <h1>{{title}}</h1>
     <v-row align="center" class="list px-3 mx-auto">
       <v-card class="mx-auto" max-width="344">
@@ -79,7 +80,7 @@ export default {
 };
 </script>
 
- <style>
+ <style scoped>
 html {
   font-family: Tahoma;
   font-size: 14px;
@@ -112,9 +113,9 @@ pre .key {
 }
 
 .container {
-  max-width: 970px;
-  padding-right: 15px;
-  padding-left: 15px;
+  max-width: 1024px;
+  padding-right: 5%;
+  padding-left: 5%;
   margin-right: auto;
   margin-left: auto;
 }

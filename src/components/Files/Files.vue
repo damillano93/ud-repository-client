@@ -1,5 +1,7 @@
 <template>
-  <v-container class="lighten-5">
+  <v-container class="lighten-5 flcontainer">
+    <br />
+    <br />
     <div>
       <h1 align="center">
         {{ h1.text }} <v-icon :title="title.text">{{ h1.icon }}</v-icon>
@@ -13,24 +15,30 @@
         single-line
         hide-details
       ></v-text-field>
+      <v-spacer></v-spacer>
+
       <v-btn small color="success" :href="add.route">
         {{ add.button }}
       </v-btn>
+
       &nbsp; &nbsp; &nbsp;
     </v-row>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
     &nbsp; &nbsp; &nbsp;
 
-    <v-data-table :headers="headers" :items="files" :search="search">
-          <template v-slot:[`item.state`]="{ item }">
-      <v-chip
-        :color="getColor(item.state)"
-        dark
-      >
-        {{ item.state }}
-      </v-chip>
-    </template>
+    <v-data-table
+      :headers="headers"
+      :items="files"
+      :search="search"
+      :loading="espera"
+      loading-text="Cargando registros"
+    >
+      <template v-slot:[`item.state`]="{ item }">
+        <v-chip :color="getColor(item.state)" dark>
+          {{ item.state }}
+        </v-chip>
+      </template>
 
       <template v-slot:[`item.location`]="{ item }">
         <a target="_blank" :href="item.location">
@@ -38,69 +46,156 @@
         </a>
       </template>
 
-     <template v-slot:[`item.actions`]="{ item }">
-            <v-icon small :title="actions.edit.title"  class="mr-2" @click="editFiles(item.id)">{{actions.edit.icon}}</v-icon>
-            <v-icon small :title="actions.detail.title" class="mr-2" @click="detailFiles(item.id)">{{actions.detail.icon}}</v-icon>
-            <v-icon small :title="actions.delete.title" class="mr-2" @click="deleteFiles(item.id)">{{actions.delete.icon}}</v-icon>
-          </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon
+          medium
+          :title="actions.edit.title"
+          class="mr-2"
+          @click="editFiles(item.id)"
+          >{{ actions.edit.icon }}</v-icon
+        >
+        <v-icon
+          medium
+          :title="actions.detail.title"
+          class="mr-2"
+          @click="detailFiles(item.id)"
+          >{{ actions.detail.icon }}</v-icon
+        >
+        <v-icon
+          medium
+          :title="actions.delete.title"
+          class="mr-2"
+          @click="eliminar(item.id)"
+          >{{ actions.delete.icon }}</v-icon
+        >
+      </template>
     </v-data-table>
+    <!-- cmbnoe --->
+    <!-- Dilog confirmacion-->
+    <v-dialog v-model="dialog" width="30%" persistent>
+      <v-card>
+        <v-card-title>¿Seguro de eliminar este recurso?</v-card-title>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-btn @click="dialog = false">Cancelar</v-btn>
+          <v-btn @click="deleteFiles(elim)">Aceptar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- fin dialog --->
+    <!-- Fin cmbnoe --->
   </v-container>
 </template>
 
 <script>
 import filesService from "../../services/files";
+import statisticsService from "../../services/statistics";
 export default {
   name: "files-list",
   data() {
     return {
+      espera: true,
       filEmail: "",
-      h1: { text: "Listado de recursos", icon: "mdi-file-outline" },
+      dialog: false,
+      elim: "",
+      h1: { text: "Mis recursos", icon: "mdi-file-outline" },
       search: "",
-      find: { label: "Buscar por correo electronico", button: "Buscar" },
+      find: { label: "Buscar por correo electrónico", button: "Buscar" },
       add: { button: "Agregar", route: "/files/add" },
       files: [],
       title: "",
       url: "Ver recurso",
       headers: [
-        { text: "Título", value: "title", align: "start", sortable: true },
+        {
+          text: "Título",
+          value: "title",
+          align: "start",
+          sortable: true,
+          class: "text-button",
+        },
         {
           text: "Descripción",
           value: "description",
           align: "start",
           sortable: true,
+          class: "text-button",
         },
-        { text: "Estado", value: "state", sortable: true, align: "start" },
-        { text: "Formato", value: "format", sortable: true, align: "start" },
+        {
+          text: "Estado",
+          value: "state",
+          sortable: true,
+          align: "start",
+          class: "text-button",
+        },
+        {
+          text: "Formato",
+          value: "format",
+          sortable: true,
+          align: "start",
+          class: "text-button",
+        },
         {
           text: "Clasificación",
           value: "purpose",
           sortable: true,
           align: "start",
+          class: "text-button",
         },
-        { text: "Recurso", value: "location", sortable: true, align: "start" },
-        { text: "Acciones", value: "actions", sortable: true, align: "start" },
+        {
+          text: "Recurso",
+          value: "location",
+          sortable: true,
+          align: "start",
+          class: "text-button",
+        },
+        {
+          text: "Acciones",
+          value: "actions",
+          sortable: true,
+          align: "start",
+          class: "text-button",
+        },
       ],
-              actions:{
-    edit: {  title: "Editar recurso", icon: "mdi-pencil" },
-    detail:{  title: "Detalle de recurso", icon: " mdi-format-list-bulleted" },
-    delete:{ title: "Eliminar recurso", icon: "mdi-delete" },
-    },
+      actions: {
+        edit: { title: "Editar recurso", icon: "mdi-pencil" },
+        detail: {
+          title: "Detalle de recurso",
+          icon: " mdi-format-list-bulleted",
+        },
+        delete: { title: "Eliminar recurso", icon: "mdi-delete" },
+      },
     };
-    
   },
   methods: {
     retrieveFiles() {
-      filesService
-        //.getFiles()
-        .getFilesByEmail(localStorage.email)
-        .then((response) => {
-          this.files = response.data;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    },
+      if  (localStorage.rol == "ADMINISTRADOR") {
+        filesService
+          .getFiles()
+          .then((response) => {
+            this.files = response.data;
+            this.espera = false;
+          })
+          .catch((e) => {
+            console.log(e);
+          });
 
+        
+      } else {
+        filesService
+          .getFilesByEmail(localStorage.email)
+          .then((response) => {
+            this.files = response.data;
+            this.espera = false;
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+    },
+    eliminar(dato) {
+      this.dialog = true;
+      this.elim = dato;
+    },
     refreshList() {
       this.retrieveFiles();
     },
@@ -132,10 +227,20 @@ export default {
         .catch((e) => {
           console.log(e);
         });
+      statisticsService
+        .getStadisticsByid(id)
+        .then((response) => {
+          let idStadistic = response.data[0].id;
+          statisticsService.deleteStadisticsById(idStadistic);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+      this.dialog = false;
     },
     getColor(state) {
-      if (state == "Inactivo") return "red";
-      if (state == "Activo") return "green";
+      if (state == "No aprobado") return "red";
+      if (state == "Aprobado") return "green";
       else return "blue";
     },
   },
@@ -145,8 +250,15 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .list {
-  max-width: 750px;
+  max-width: 800px;
+}
+.flcontainer {
+  max-width: 1536px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
 }
 </style>
